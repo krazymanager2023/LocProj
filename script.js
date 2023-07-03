@@ -1,67 +1,52 @@
-// Client ID and API key from the Google Developers Console
-var CLIENT_ID = '585294421526-o36njbpa81oftfv9la4anatjjoodlmh5.apps.googleusercontent.com';
-var API_KEY = 'AIzaSyC443v_E-5balwvcGsFR0xHMNbrKkeJJBU';
-
-// ID of the Google Spreadsheet
-var SPREADSHEET_ID = 'MyMapData_MyMapProj';
-
-// Array containing the scopes for the Google Sheets API
-var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
-
-// Function to handle form submission
-function handleFormSubmit(event) {
-    event.preventDefault();
-
-    var name = $('#name').val();
-    var mobile = $('#mobile').val();
-
-    // Get the user's live location
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-
-            // Send the data to Google Sheets
-            sendToGoogleSheets(name, mobile, latitude, longitude);
-        });
-    } else {
-        alert('Geolocation is not supported by this browser.');
-    }
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(submitFormWithLocation, handleLocationError);
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
 }
 
-// Function to send data to Google Sheets using the Sheets API
-function sendToGoogleSheets(name, mobile, latitude, longitude) {
-    gapi.load('client:auth2', initClient);
+function submitFormWithLocation(position) {
+  var name = document.getElementById('name').value;
+  var mobileNumber = document.getElementById('mobileNumber').value;
+  var latitude = position.coords.latitude;
+  var longitude = position.coords.longitude;
 
-    function initClient() {
-        gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-            scope: SCOPES.join(' ')
-        }).then(function() {
-            gapi.auth2.getAuthInstance().signIn().then(function() {
-                var values = [
-                    [name, mobile, latitude, longitude]
-                ];
+  var xhr = new XMLHttpRequest();
+  var url = "https://script.google.com/macros/s/1PW8Tky075FOtFaf9W6vGryjIqnX2gS1prx8qxDiD9F68ruRTiMASe4oV/exec";
+  var formData = "name=" + encodeURIComponent(name) + "&mobileNumber=" + encodeURIComponent(mobileNumber) +
+    "&latitude=" + encodeURIComponent(latitude) + "&longitude=" + encodeURIComponent(longitude);
 
-                gapi.client.sheets.spreadsheets.values.append({
-                    spreadsheetId: SPREADSHEET_ID,
-                    range: 'Sheet1!A1',
-                    valueInputOption: 'USER_ENTERED',
-                    resource: {
-                        values: values
-                    }
-                }).then(function(response) {
-                    console.log('Data sent to Google Sheets.');
-                    $('#userForm')[0].reset();
-                }, function(reason) {
-                    console.error('Error: ' + reason.result.error.message);
-                });
-            });
-        });
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status === 200) {
+        console.log(xhr.responseText);
+        alert("Form submitted successfully!");
+      } else {
+        alert("Form submission failed. Please try again later.");
+      }
     }
+  };
+
+  xhr.open("POST", url, true);
+  xhr.send(formData);
 }
 
-// Add event listener to the form
-$('#userForm').on('submit', handleFormSubmit);
+function handleLocationError(error) {
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      alert("User denied the request for Geolocation.");
+      break;
+    case error.POSITION_UNAVAILABLE:
+      alert("Location information is unavailable.");
+      break;
+    case error.TIMEOUT:
+      alert("The request to get user location timed out.");
+      break;
+    case error.UNKNOWN_ERROR:
+      alert("An unknown error occurred.");
+      break;
+  }
+}
