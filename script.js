@@ -1,22 +1,35 @@
-function getLocation() {
+document.getElementById("myForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+  submitForm();
+});
+
+function submitForm() {
+  var name = document.getElementById('name').value;
+  var mobileNumber = document.getElementById('mobileNumber').value;
+
+  getLocation(name, mobileNumber);
+}
+
+function getLocation(name, mobileNumber) {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(submitFormWithLocation, handleLocationError);
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+
+      sendFormData(name, mobileNumber, latitude, longitude);
+    }, handleLocationError);
   } else {
     alert("Geolocation is not supported by this browser.");
   }
 }
 
-function submitFormWithLocation(position) {
-  var name = document.getElementById('name').value;
-  var mobileNumber = document.getElementById('mobileNumber').value;
-  var latitude = position.coords.latitude;
-  var longitude = position.coords.longitude;
-
+function sendFormData(name, mobileNumber, latitude, longitude) {
   var xhr = new XMLHttpRequest();
-  var url = "https://script.google.com/macros/s/1PW8Tky075FOtFaf9W6vGryjIqnX2gS1prx8qxDiD9F68ruRTiMASe4oV/exec";
+  var url = "https://script.google.com/macros/s/{SCRIPT_ID}/exec";
   var formData = "name=" + encodeURIComponent(name) + "&mobileNumber=" + encodeURIComponent(mobileNumber) +
     "&latitude=" + encodeURIComponent(latitude) + "&longitude=" + encodeURIComponent(longitude);
 
+  xhr.open("POST", url, true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
   xhr.onreadystatechange = function() {
@@ -30,7 +43,6 @@ function submitFormWithLocation(position) {
     }
   };
 
-  xhr.open("POST", url, true);
   xhr.send(formData);
 }
 
