@@ -25,7 +25,7 @@ function getLocation(name, mobileNumber) {
 
 function sendFormData(name, mobileNumber, latitude, longitude) {
   var xhr = new XMLHttpRequest();
-  var url = "https://script.google.com/macros/s/{SCRIPT_ID}/exec";
+  var url = "https://script.google.com/macros/s/1yf14DpGAv-2DWYQyMR3rTVP-_vsxB1X-Cg-9NfJpvs-uMKW85l7R_HWQ/exec";
   var formData = "name=" + encodeURIComponent(name) + "&mobileNumber=" + encodeURIComponent(mobileNumber) +
     "&latitude=" + encodeURIComponent(latitude) + "&longitude=" + encodeURIComponent(longitude);
 
