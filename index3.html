@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fetch Data from Spreadsheet and Detect Geofence</title>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+<script>
+geofences = []; // Array to store geofences
+function fetchSpreadsheetData() {
+    $.ajax({
+        url: 'https://api.apispreadsheets.com/data/y4xWXgjq0vcLH5qW/',
+        type: 'get',
+        success: function(data) {
+            processSpreadsheetData(data);
+        },
+        error: function() {
+            alert("Failed to fetch spreadsheet data!");
+        }
+    });
+}
+
+function processSpreadsheetData(data) {
+    geofences = []; // Clear the geofences array
+
+    // Loop through each row of data
+    for (let i = 0; i < data.data.length; i++) {
+        const row = data.data[i];
+        const latitude = parseFloat(row.LAT);
+        const longitude = parseFloat(row.LON);
+        const radius = 5;
+        const geofence = calculateGeofence(latitude, longitude, radius);
+        geofences.push(geofence);
+//		const email = row.email_id;
+    }
+
+    // Call the function to detect geofence for current location
+
+	detectGeofence();
+	setInterval(detectGeofence, 5000);
+}
+
+function detectGeofence() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            successCallback,
+            errorCallback,
+            { enableHighAccuracy: true }
+        );
+    } else {
+        alert("Geolocation is not supported in this browser.");
+    }
+}
+
+function successCallback(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+	//alert(""+latitude+" "+longitude);
+	
+    for (let i = 0; i < geofences.length; i++) {
+        const geofence = geofences[i];
+        const withinGeofence = isWithinGeofence(latitude, longitude, geofence);
+		alert("" + (withinGeofence));
+        if (withinGeofence) {
+			switch(i) {
+			case 0:
+				alert("Adv Msg 1. PROMOCODE1");
+				// code block
+				break;
+			case 1:
+				alert("Adv Msg 2. PROMOCODE2");
+				// code block
+				break;
+			case 2:
+				alert("Adv Msg 3. PROMOCODE3");
+				break;
+			default:
+				// code block
+			}
+            alert("You are within the geofence #" + (i + 1));
+			window.open('','_parent','');
+			window.close();
+//			sendNotification(geofence.email);
+			
+        }
+    }
+}
+
+function isWithinGeofence(latitude, longitude, geofence) {
+    return (
+        latitude >= geofence.minLat &&
+        latitude <= geofence.maxLat &&
+        longitude >= geofence.minLon &&
+        longitude <= geofence.maxLon
+    );
+}
+
+function calculateGeofence(latitude, longitude, radius) {
+    const earthRadius = 6371e3; // Earth's radius in meters
+    const deltaLat = (radius / earthRadius) * (180 / Math.PI); // Latitude difference in degrees
+    const deltaLon = (radius / (earthRadius * Math.cos(Math.PI * latitude / 180))) * (180 / Math.PI); // Longitude difference in degrees
+
+    const geofence = {
+        minLat: latitude - deltaLat,
+        maxLat: latitude + deltaLat,
+        minLon: longitude - deltaLon,
+        maxLon: longitude + deltaLon
+    };
+
+    return geofence;
+}
+
+function errorCallback(error) {
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            alert("Location permission denied by the user.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            alert("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("An unknown error occurred.");
+            break;
+    }
+}
+
+//function sendNotification(email) {
+//    const message = "You are within the geofence.";
+//    const subject = "Geofence Alert";
+//
+//    $.ajax({
+//        url: "https://script.google.com/macros/s/Your_Google_Apps_Script_ID/exec",
+//        type: "post",
+//        data: {
+//            email: email,
+//            subject: subject,
+//            message: message
+//        },
+//        success: function() {
+//            console.log("Push Notification sent successfully to " + email);
+//        },
+//        error: function() {
+//            console.log("Failed to send notification to " + email);
+//        }
+//    });
+//}
+
+</script>
+</head>
+<body>
+  <button onclick="fetchSpreadsheetData()">Alow location access</button>
+</body>
+</html>
