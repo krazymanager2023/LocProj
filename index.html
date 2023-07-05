@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Fetch Data from Spreadsheet and Detect Geofence</title>
+<title>Burger King - Unlock hidden treasures!</title>
+<!title><!Fetch Data from Spreadsheet and Detect Geofence><!/title>
 <script
   src="https://code.jquery.com/jquery-3.4.1.js"
   integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
@@ -61,8 +62,7 @@ function successCallback(position) {
     for (let i = 0; i < geofences.length; i++) {
         const geofence = geofences[i];
         const withinGeofence = isWithinGeofence(latitude, longitude, geofence);
-		//alert("" + (withinGeofence));
-	alert("Hi");
+	//alert("" + (withinGeofence));
         if (withinGeofence) {
 			switch(i) {
 			case 0:
