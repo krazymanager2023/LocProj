@@ -65,29 +65,23 @@ function detectGeofence() {
 function successCallback(position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
-	//alert(""+latitude+" "+longitude);
 	
     for (let i = 0; i < geofences.length; i++) {
         const geofence = geofences[i];
         const withinGeofence = isWithinGeofence(latitude, longitude, geofence);
-	//alert("" + (withinGeofence));
         if (withinGeofence) {
 			switch(i) {
 			case 0:
 				alert("SuperSaver Combo! \nEnjoy a free upgrade to a larger meal on orders above Rs499, including a meals for only 159. \nOffer applicable on app orders, all days of the week. \nHere's more. Enjoy a free cup of ice tea at Sharma Ji Canteen. PROMOCODE: ILOVEICETEA23");
-				// code block
 				break;
 			case 1:
 				alert("SuperSaver Combo! \nEnjoy a free upgrade to a larger meal on orders above Rs499, including a DOUBLE WHOPPER meal for just ₹159. \nOffer applicable on app orders, all days of the week. \nHere's more. Enjoy a chilled soft drink worth ₹40 at Sharma Ji Canteen. PROMOCODE: ONTHEROCKS23");
-				// code block
 				break;
 			case 2:
 				alert("SuperSaver Combo! \nEnjoy a free upgrade to a larger meal on orders above Rs499, including a meals for only 159. \nOffer applicable on app orders, all days of the week. \nHere's more. Get a delicious combo of Dairy Milk chocolate + Munch worth ₹30. PROMOCODE: 2YUMMY");
 				break;
 			default:
-				// code block
 			}
-            alert("You are within the geofence #" + (i + 1));
 			window.open('','_parent','');
 			window.close();
 //			sendNotification(geofence.email);
